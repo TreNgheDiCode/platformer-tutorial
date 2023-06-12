@@ -93,7 +93,7 @@ public class Player extends Entity {
 //            return;
 
         if (!inAir)
-            if ((!left && ! right) && (right && left))
+            if ((!left && ! right) || (right && left))
                 return;
 
         float xSpeed = 0;

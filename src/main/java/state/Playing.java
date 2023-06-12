@@ -9,6 +9,10 @@ import utils.LoadSave;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.util.Random;
+
+import static utils.Constants.Environment.*;
 
 public class Playing extends State implements Statemethods {
     private Player player;
@@ -23,9 +27,20 @@ public class Playing extends State implements Statemethods {
     private int maxTilesOffset = lvlTilesWide - Game.TILES_IN_WIDTH;
     private int maxLvlOffsetX = maxTilesOffset * Game.TILE_SIZE;
 
+    private BufferedImage backgroundImg, bigCloud, smallCloud;
+    private int[] smallCloudPos;
+    private Random rnd = new Random();
+
     public Playing(Game game) {
         super(game);
         initClasses();
+
+        backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.PLAYING_BG_IMG);
+        bigCloud = LoadSave.GetSpriteAtlas(LoadSave.BIG_CLOUDS);
+        smallCloud = LoadSave.GetSpriteAtlas(LoadSave.SMALL_CLOUDS);
+        smallCloudPos = new int[8];
+        for (int i = 0; i < smallCloudPos.length; i++)
+            smallCloudPos[i] = (int) (90 * Game.SCALE) + rnd.nextInt((int) (100 * Game.SCALE));
     }
 
     private void initClasses() {
@@ -71,6 +86,10 @@ public class Playing extends State implements Statemethods {
 
     @Override
     public void draw(Graphics g) {
+        g.drawImage(backgroundImg, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
+
+        drawClouds(g);
+
         levelManager.draw(g, xLevelOffset);
         player.render(g, xLevelOffset);
 
@@ -79,6 +98,14 @@ public class Playing extends State implements Statemethods {
             g.fillRect(0 ,0 , Game.GAME_WIDTH, Game.GAME_HEIGHT);
             pauseOverlay.draw(g);
         }
+    }
+
+    private void drawClouds(Graphics g) {
+        for (int i = 0; i < 3; i++)
+            g. drawImage(bigCloud, + i * BIG_CLOUD_WIDTH - (int) (xLevelOffset * 0.3), (int) (204 * Game.SCALE), BIG_CLOUD_WIDTH, BIG_CLOUD_HEIGHT, null);
+
+        for (int i = 0; i < smallCloudPos.length; i++)
+            g.drawImage(smallCloud, SMALL_CLOUD_WIDTH * 4 * i - (int) (xLevelOffset * 0.7), smallCloudPos[i], SMALL_CLOUD_WIDTH, SMALL_CLOUD_HEIGHT, null);
     }
 
     public void mouseDragged(MouseEvent e) {
