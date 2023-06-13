@@ -27,7 +27,7 @@ public class Playing extends State implements Statemethods {
     private int rightBorder = (int) (0.8 * Game.GAME_WIDTH);
     private int lvlTilesWide = LoadSave.GetLevelData()[0].length;
     private int maxTilesOffset = lvlTilesWide - Game.TILES_IN_WIDTH;
-    private int maxLvlOffsetX = maxTilesOffset * Game.TILE_SIZE;
+    private int maxLvlOffsetX = maxTilesOffset * Game.TILES_SIZE;
 
     private BufferedImage backgroundImg, bigCloud, smallCloud;
     private int[] smallCloudPos;
@@ -66,7 +66,7 @@ public class Playing extends State implements Statemethods {
         if (!paused) {
             levelManager.update();
             player.update();
-            enemyManager.update(levelManager.getCurrentLevel().getLevelData());
+            enemyManager.update(levelManager.getCurrentLevel().getLevelData(), player);
             checkCloseToBorder();
         }
 
