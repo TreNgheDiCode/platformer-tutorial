@@ -43,7 +43,7 @@ public class Player extends Entity {
         this.playing = playing;
         this.state = IDLE;
         this.maxHealth = 100;
-        this.currentHealth = maxHealth;
+        this.currentHealth = 35;
         this.walkSpeed = Game.SCALE;
         loadAnimations();
         initHitbox(20, 27);
@@ -73,30 +73,16 @@ public class Player extends Entity {
         updateAttackBox();
 
         updatePos();
+        if (moving)
+            checkPotionTouched();
         if (attacking)
             checkAttack();
         updateAnimationTick();
         setAnimation();
     }
 
-    private void checkAttack() {
-        if (attackChecked || aniIndex != 1)
-            return;
-        attackChecked = true;
-        playing.checkEnemyHit(attackBox);
-    }
-
-    private void updateAttackBox() {
-        if (right) {
-            attackBox.x = hitbox.x + hitbox.width + (int) (10 * Game.SCALE);
-        } else if (left) {
-            attackBox.x = hitbox.x - hitbox.width - (int) (10 * Game.SCALE);
-        }
-        attackBox.y = hitbox.y + (10 * Game.SCALE);
-    }
-
-    private void updateHealthBar() {
-        healthWidth = (int) ((currentHealth / (float) maxHealth) * healthBarWidth);
+    private void checkPotionTouched() {
+        playing.checkPotionTouched(hitbox);
     }
 
     public void render(Graphics g, int lvlOffset) {
@@ -119,6 +105,27 @@ public class Player extends Entity {
         int healthBarYStart = (int) (14 * Game.SCALE);
         int healthBarHeight = (int) (4 * Game.SCALE);
         g.fillRect(healthBarXStart + statusBarX, healthBarYStart + statusBarY, healthWidth, healthBarHeight);
+    }
+
+    private void checkAttack() {
+        if (attackChecked || aniIndex != 1)
+            return;
+        attackChecked = true;
+        playing.checkEnemyHit(attackBox);
+        playing.checkObjectHit(attackBox);
+    }
+
+    private void updateAttackBox() {
+        if (right) {
+            attackBox.x = hitbox.x + hitbox.width + (int) (10 * Game.SCALE);
+        } else if (left) {
+            attackBox.x = hitbox.x - hitbox.width - (int) (10 * Game.SCALE);
+        }
+        attackBox.y = hitbox.y + (10 * Game.SCALE);
+    }
+
+    private void updateHealthBar() {
+        healthWidth = (int) ((currentHealth / (float) maxHealth) * healthBarWidth);
     }
 
     private void updateAnimationTick() {
@@ -244,6 +251,10 @@ public class Player extends Entity {
             // gameOver();
         } else if (currentHealth >= 100)
             currentHealth = maxHealth;
+    }
+
+    public void changePower(int value) {
+        System.out.println("Add power");
     }
 
     private void loadAnimations() {
