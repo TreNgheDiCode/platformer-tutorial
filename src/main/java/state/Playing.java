@@ -4,6 +4,7 @@ import entities.EnemyManager;
 import entities.Player;
 import levels.LevelManager;
 import main.Game;
+import object.ObjectManager;
 import ui.GameOverOverlay;
 import ui.LevelCompletedOverlay;
 import ui.PauseOverlay;
@@ -22,6 +23,7 @@ public class Playing extends State implements Statemethods {
     private Player player;
     private LevelManager levelManager;
     private EnemyManager enemyManager;
+    private ObjectManager objectManager;
     private PauseOverlay pauseOverlay;
     private GameOverOverlay gameOverOverlay;
     private LevelCompletedOverlay levelCompletedOverlay;
@@ -73,9 +75,12 @@ public class Playing extends State implements Statemethods {
     private void initClasses() {
         levelManager = new LevelManager(game);
         enemyManager = new EnemyManager(this);
+        objectManager = new ObjectManager(this);
+
         player = new Player(200, 150, (int) (64 * Game.SCALE), (int) (40 * Game.SCALE), this);
         player.loadLvlData(levelManager.getCurrentLevel().getLevelData());
         player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
+
         pauseOverlay = new PauseOverlay(this);
         gameOverOverlay = new GameOverOverlay(this);
         levelCompletedOverlay = new LevelCompletedOverlay(this);
@@ -97,10 +102,32 @@ public class Playing extends State implements Statemethods {
             levelCompletedOverlay.update();
         } else if (!gameOver) {
             levelManager.update();
+            objectManager.update();
             player.update();
             enemyManager.update(levelManager.getCurrentLevel().getLevelData(), player);
             checkCloseToBorder();
         }
+    }
+
+    @Override
+    public void draw(Graphics g) {
+        g.drawImage(backgroundImg, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
+
+        drawClouds(g);
+
+        levelManager.draw(g, xLevelOffset);
+        player.render(g, xLevelOffset);
+        enemyManager.draw(g, xLevelOffset);
+        objectManager.draw(g, xLevelOffset);
+
+        if (paused) {
+            g.setColor(new Color(0, 0, 0, 150));
+            g.fillRect(0 ,0 , Game.GAME_WIDTH, Game.GAME_HEIGHT);
+            pauseOverlay.draw(g);
+        } else if (gameOver) {
+            gameOverOverlay.draw(g);
+        } else if (lvlCompleted)
+            levelCompletedOverlay.draw(g);
     }
 
     private void checkCloseToBorder() {
@@ -116,26 +143,6 @@ public class Playing extends State implements Statemethods {
             xLevelOffset = maxLvlOffsetX;
         else if (xLevelOffset < 0)
             xLevelOffset = 0;
-    }
-
-    @Override
-    public void draw(Graphics g) {
-        g.drawImage(backgroundImg, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
-
-        drawClouds(g);
-
-        levelManager.draw(g, xLevelOffset);
-        player.render(g, xLevelOffset);
-        enemyManager.draw(g, xLevelOffset);
-
-        if (paused) {
-            g.setColor(new Color(0, 0, 0, 150));
-            g.fillRect(0 ,0 , Game.GAME_WIDTH, Game.GAME_HEIGHT);
-            pauseOverlay.draw(g);
-        } else if (gameOver) {
-            gameOverOverlay.draw(g);
-        } else if (lvlCompleted)
-            levelCompletedOverlay.draw(g);
     }
 
     private void drawClouds(Graphics g) {
@@ -242,5 +249,9 @@ public class Playing extends State implements Statemethods {
 
     public void setLevelCompleted(boolean levelCompleted) {
         this.lvlCompleted = levelCompleted;
+    }
+
+    public ObjectManager getObjectManager() {
+        return objectManager;
     }
 }
