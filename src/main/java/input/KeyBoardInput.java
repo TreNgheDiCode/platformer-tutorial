@@ -22,24 +22,17 @@ public class KeyBoardInput implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         switch (Gamestate.state) {
-            case PLAYING -> {
-                gamePanel.getGame().getPlaying().keyPressed(e);
-            }
-            case MENU -> {
-                gamePanel.getGame().getMenu().keyPressed(e);
-            }
+            case PLAYING -> gamePanel.getGame().getPlaying().keyPressed(e);
+            case MENU -> gamePanel.getGame().getMenu().keyPressed(e);
+            case OPTIONS -> gamePanel.getGame().getGameOptions().keyPressed(e);
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         switch (Gamestate.state) {
-            case PLAYING -> {
-                gamePanel.getGame().getPlaying().keyReleased(e);
-            }
-            case MENU -> {
-                gamePanel.getGame().getMenu().keyReleased(e);
-            }
+            case PLAYING -> gamePanel.getGame().getPlaying().keyReleased(e);
+            case MENU -> gamePanel.getGame().getMenu().keyReleased(e);
         }
     }
 }

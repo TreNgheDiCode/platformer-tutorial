@@ -1,8 +1,10 @@
 package main;
 
+import state.GameOptions;
 import state.Gamestate;
 import state.Menu;
 import state.Playing;
+import ui.AudioOptions;
 import utils.LoadSave;
 
 import java.awt.*;
@@ -16,6 +18,8 @@ public class Game implements Runnable {
 
     private Playing playing;
     private Menu menu;
+    private AudioOptions audioOptions;
+    private GameOptions gameOptions;
 
     public final static int TILES_DEFAULT_SIZE = 32;
     public final static float SCALE = 1.5f;
@@ -39,8 +43,10 @@ public class Game implements Runnable {
     }
 
     private void initClasses() {
+        audioOptions = new AudioOptions();
         menu = new Menu(this);
         playing = new Playing(this);
+        gameOptions = new GameOptions(this);
     }
 
     private void startGameLoop() {
@@ -49,31 +55,21 @@ public class Game implements Runnable {
     }
 
     public void update() {
-        switch(Gamestate.state) {
-            case MENU:
-                menu.update();
-                break;
-            case PLAYING:
-                playing.update();
-                break;
-            case OPTIONS:
-            case QUIT:
-            default:
-                System.exit(0);
-                break;
+        switch (Gamestate.state) {
+            case MENU -> menu.update();
+            case PLAYING -> playing.update();
+            case OPTIONS -> gameOptions.update();
+            default -> System.exit(0);
         }
     }
 
     public void render(Graphics g) {
-        switch(Gamestate.state) {
-            case MENU:
-                menu.draw(g);
-                break;
-            case PLAYING:
-                playing.draw(g);
-                break;
-            default:
-                break;
+        switch (Gamestate.state) {
+            case MENU -> menu.draw(g);
+            case PLAYING -> playing.draw(g);
+            case OPTIONS -> gameOptions.draw(g);
+            default -> {
+            }
         }
 
     }
@@ -132,5 +128,13 @@ public class Game implements Runnable {
 
     public Playing getPlaying() {
         return playing;
+    }
+
+    public AudioOptions getAudioOptions() {
+        return audioOptions;
+    }
+
+    public GameOptions getGameOptions() {
+        return gameOptions;
     }
 }
