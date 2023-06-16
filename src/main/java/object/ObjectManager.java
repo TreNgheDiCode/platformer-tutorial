@@ -2,6 +2,7 @@ package object;
 
 import entities.Player;
 import levels.Level;
+import main.Game;
 import state.Playing;
 import utils.LoadSave;
 
@@ -11,14 +12,17 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import static utils.Constants.ObjectConstants.*;
+import static utils.HelpMethods.CanCannonSeePlayer;
 
 public class ObjectManager {
     private Playing playing;
     private BufferedImage[][] potionImgs, containerImgs;
+    private BufferedImage[] cannonImgs;
     private BufferedImage spikeImg;
     private ArrayList<Potion> potions;
     private ArrayList<GameContainer> containers;
     private ArrayList<Spike> spikes;
+    private ArrayList<Cannon> cannons;
 
     public ObjectManager(Playing playing) {
         this.playing = playing;
@@ -69,39 +73,89 @@ public class ObjectManager {
         potions = new ArrayList<>(newLevel.getPotions());
         containers = new ArrayList<>(newLevel.getContainers());
         spikes = newLevel.getSpikes();
+        cannons = newLevel.getCannons();
     }
 
     private void loadImgs() {
+        // Potion
         BufferedImage potionSprite = LoadSave.GetSpriteAtlas(LoadSave.POTION_ATLAS);
         potionImgs = new BufferedImage[2][7];
-
         for (int j = 0; j < potionImgs.length; j++)
             for (int i  = 0; i < potionImgs[j].length; i++)
                 potionImgs[j][i] = potionSprite.getSubimage(i * 12,  j * 16, 12, 16);
-
+        // Container
         BufferedImage containerSprite = LoadSave.GetSpriteAtlas(LoadSave.CONTAINER_ATLAS);
         containerImgs = new BufferedImage[2][8];
-
         for (int j = 0; j < containerImgs.length; j++)
             for (int i  = 0; i < containerImgs[j].length; i++)
                 containerImgs[j][i] = containerSprite.getSubimage(i * 40,  j * 30, 40, 30);
-
+        // Spike
         spikeImg = LoadSave.GetSpriteAtlas(LoadSave.TRAP_ATLAS);
+        // Cannon
+        cannonImgs = new BufferedImage[7];
+        BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.CANNON_ATLAS);
+
+        for (int i = 0; i < cannonImgs.length; i++)
+            cannonImgs[i] = temp.getSubimage(i * 40, 0, 40, 26);
     }
 
-    public void update() {
+    public void update(int[][] lvlData, Player player) {
         for (Potion p : potions)
             if (p.isActive())
                 p.update();
         for (GameContainer gc : containers)
             if (gc.isActive())
                 gc.update();
+        updateCannons(lvlData, player);
+    }
+
+    private boolean isPlayerInRange(Cannon c, Player player) {
+        int absValue = (int) Math.abs(player.getHitbox().x - c.getHitbox().x);
+        return absValue <= Game.TILES_SIZE * 5;
+    }
+
+    private boolean isPlayerInFrontOfCannon(Cannon c, Player player) {
+        if (c. getObjType() == CANNON_LEFT) {
+            return c.getHitbox().x > player.getHitbox().x;
+        } else return c.getHitbox().x < player.getHitbox().x;
+    }
+
+    private void updateCannons(int[][] lvlData, Player player) {
+        for (Cannon c : cannons) {
+            if (!c.doAnimation)
+                if (c.getTileY() == player.getTileY())
+                    if (isPlayerInRange(c, player))
+                        if (isPlayerInFrontOfCannon(c, player))
+                            if (CanCannonSeePlayer(lvlData, player.getHitbox(), c.getHitbox(), c.getTileY()))
+                                shootCannon(c);
+
+            c.update();
+        }
+    }
+
+    private void shootCannon(Cannon c) {
+        c.setDoAnimation(true);
     }
 
     public void draw(Graphics g, int xLvlOffset) {
         drawPotions(g, xLvlOffset);
         drawContainers(g, xLvlOffset);
         drawTraps(g, xLvlOffset);
+        drawCannons(g, xLvlOffset);
+    }
+
+    private void drawCannons(Graphics g, int xLvlOffset) {
+        for (Cannon c : cannons) {
+            int x = (int) (c.getHitbox().x - xLvlOffset);
+            int width = CANNON_WIDTH;
+
+            if (c.getObjType() == CANNON_RIGHT) {
+                x += width;
+                width *= -1;
+            }
+
+            g.drawImage(cannonImgs[c.getAniIndex()], x, (int) (c.getHitbox().y), width, CANNON_HEIGHT, null);
+        }
     }
 
     private void drawTraps(Graphics g, int xLvlOffset) {
@@ -148,5 +202,7 @@ public class ObjectManager {
             p.reset();
         for (GameContainer gc : containers)
             gc.reset();
+        for (Cannon c : cannons)
+            c.reset();
     }
 }
