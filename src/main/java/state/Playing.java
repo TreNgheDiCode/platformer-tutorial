@@ -175,6 +175,10 @@ public class Playing extends State implements Statemethods {
         objectManager.checkObjectTouched(hitbox);
     }
 
+    public void checkSpikesTouched(Player player) {
+        objectManager.checkSpikesTouched(player);
+    }
+
     public void checkObjectHit(Rectangle2D.Float attackBox) {
         objectManager.checkObjectHit(attackBox);
     }
@@ -264,5 +268,7 @@ public class Playing extends State implements Statemethods {
         return objectManager;
     }
 
-
+    public LevelManager getLevelManager() {
+        return levelManager;
+    }
 }
