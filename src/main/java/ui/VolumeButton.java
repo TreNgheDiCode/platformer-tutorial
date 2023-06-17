@@ -5,7 +5,7 @@ import utils.LoadSave;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-import static utils.Constants.UI.VolumeButton.*;
+import static utils.Constants.UI.VolumeButtons.*;
 
 public class VolumeButton extends PauseButton {
     private BufferedImage[] imgs;

@@ -1,8 +1,9 @@
 package ui;
 
-import java.awt.*;
+import java.awt.Rectangle;
 
 public class PauseButton {
+
     protected int x, y, width, height;
     protected Rectangle bounds;
 

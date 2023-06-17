@@ -1,8 +1,8 @@
 package object;
 
-import main.Game;
-
 import java.awt.geom.Rectangle2D;
+
+import main.Game;
 
 import static utils.Constants.Projectiles.*;
 
@@ -12,7 +12,6 @@ public class Projectile {
     private boolean active = true;
 
     public Projectile(int x, int y, int dir) {
-
         int xOffset = (int) (-3 * Game.SCALE);
         int yOffset = (int) (5 * Game.SCALE);
 
@@ -36,11 +35,11 @@ public class Projectile {
         return hitbox;
     }
 
-    public boolean isActive() {
-        return active;
-    }
-
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public boolean isActive() {
+        return active;
     }
 }

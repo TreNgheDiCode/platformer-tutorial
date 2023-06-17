@@ -1,11 +1,19 @@
 package audio;
 
-import javax.sound.sampled.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Random;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.BooleanControl;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
 public class AudioPlayer {
+
     public static int MENU_1 = 0;
     public static int LEVEL_1 = 1;
     public static int LEVEL_2 = 2;
@@ -19,7 +27,7 @@ public class AudioPlayer {
     public static int ATTACK_THREE = 6;
 
     private Clip[] songs, effects;
-    private int currentSongId, currentEffectId;
+    private int currentSongId;
     private float volume = 0.5f;
     private boolean songMute, effectMute;
     private Random rand = new Random();
@@ -31,16 +39,16 @@ public class AudioPlayer {
     }
 
     private void loadSongs() {
-        String[] names = {"menu", "level1", "level2"};
+        String[] names = { "menu", "level1", "level2" };
         songs = new Clip[names.length];
-        for (int i =0; i < songs.length; i++)
+        for (int i = 0; i < songs.length; i++)
             songs[i] = getClip(names[i]);
     }
 
     private void loadEffects() {
-        String[] effectNames = {"die", "jump", "gameover", "lvlcompleted", "attack1", "attack2", "attack3"};
+        String[] effectNames = { "die", "jump", "gameover", "lvlcompleted", "attack1", "attack2", "attack3" };
         effects = new Clip[effectNames.length];
-        for (int i =0; i < effects.length; i++)
+        for (int i = 0; i < effects.length; i++)
             effects[i] = getClip(effectNames[i]);
 
         updateEffectsVolume();
@@ -55,17 +63,13 @@ public class AudioPlayer {
             Clip c = AudioSystem.getClip();
             c.open(audio);
             return c;
-        } catch (LineUnavailableException | UnsupportedAudioFileException | IOException e) {
+
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+
             e.printStackTrace();
         }
 
         return null;
-    }
-
-    public void playAttackSound() {
-        int start = 4;
-        start += rand.nextInt(3);
-        playEffect(start);
     }
 
     public void setVolume(float volume) {
@@ -77,11 +81,6 @@ public class AudioPlayer {
     public void stopSong() {
         if (songs[currentSongId].isActive())
             songs[currentSongId].stop();
-    }
-
-    public void stopEffect() {
-        if (effects[currentEffectId].isActive())
-            effects[currentEffectId].stop();
     }
 
     public void setLevelSong(int lvlIndex) {
@@ -96,11 +95,15 @@ public class AudioPlayer {
         playEffect(LVL_COMPLETED);
     }
 
+    public void playAttackSound() {
+        int start = 4;
+        start += rand.nextInt(3);
+        playEffect(start);
+    }
+
     public void playEffect(int effect) {
-        stopEffect();
-        currentEffectId = effect;
-        updateEffectsVolume();
-        effects[effect].setMicrosecondPosition(0);
+        if (effects[effect].getMicrosecondPosition() > 0)
+            effects[effect].setMicrosecondPosition(0);
         effects[effect].start();
     }
 
@@ -125,7 +128,7 @@ public class AudioPlayer {
         this.effectMute = !effectMute;
         for (Clip c : effects) {
             BooleanControl booleanControl = (BooleanControl) c.getControl(BooleanControl.Type.MUTE);
-            booleanControl.setValue(songMute);
+            booleanControl.setValue(effectMute);
         }
         if (!effectMute)
             playEffect(JUMP);
@@ -147,4 +150,3 @@ public class AudioPlayer {
         }
     }
 }
-

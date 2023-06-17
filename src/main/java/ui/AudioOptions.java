@@ -7,8 +7,8 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 
 import static utils.Constants.UI.PauseButtons.SOUND_SIZE;
-import static utils.Constants.UI.VolumeButton.SLIDER_WIDTH;
-import static utils.Constants.UI.VolumeButton.VOLUME_HEIGHT;
+import static utils.Constants.UI.VolumeButtons.SLIDER_WIDTH;
+import static utils.Constants.UI.VolumeButtons.VOLUME_HEIGHT;
 
 public class AudioOptions {
 

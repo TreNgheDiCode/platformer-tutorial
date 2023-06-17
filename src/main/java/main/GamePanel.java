@@ -1,7 +1,7 @@
 package main;
 
-import input.KeyBoardInput;
-import input.MouseInput;
+import input.KeyboardInputs;
+import input.MouseInputs;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,15 +10,15 @@ import static main.Game.GAME_HEIGHT;
 import static main.Game.GAME_WIDTH;
 
 public class GamePanel extends JPanel {
-    private MouseInput mouseInput;
+    private MouseInputs mouseInput;
     private Game game;
 
     public GamePanel(Game game) {
-        mouseInput = new MouseInput(this);
+        mouseInput = new MouseInputs(this);
         this.game = game;
 
         setPanelSize();
-        addKeyListener(new KeyBoardInput(this));
+        addKeyListener(new KeyboardInputs(this));
         addMouseListener(mouseInput);
         addMouseMotionListener(mouseInput);
     }

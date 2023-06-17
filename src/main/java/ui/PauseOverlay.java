@@ -10,8 +10,8 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
 import static utils.Constants.UI.PauseButtons.*;
-import static utils.Constants.UI.UrmButtons.*;
-import static utils.Constants.UI.VolumeButton.*;
+import static utils.Constants.UI.URMButtons.*;
+import static utils.Constants.UI.VolumeButtons.*;
 
 public class PauseOverlay {
     private Playing playing;
@@ -85,6 +85,7 @@ public class PauseOverlay {
 
     public void mouseReleased(MouseEvent e) {
         if (isIn(e, menuB)) {
+            playing.resetAll();
             playing.setGameState(Gamestate.MENU);
             playing.unpauseGame();
         } else if (isIn(e, replayB)) {

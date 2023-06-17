@@ -1,14 +1,16 @@
 package object;
 
-import main.Game;
-
-import java.awt.*;
-import java.awt.geom.Rectangle2D;
-
 import static utils.Constants.ANI_SPEED;
 import static utils.Constants.ObjectConstants.*;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.geom.Rectangle2D;
+
+import main.Game;
+
 public class GameObject {
+
     protected int x, y, objType;
     protected Rectangle2D.Float hitbox;
     protected boolean doAnimation, active = true;
@@ -31,9 +33,8 @@ public class GameObject {
                 if (objType == BARREL || objType == BOX) {
                     doAnimation = false;
                     active = false;
-                } else if (objType == CANNON_LEFT || objType == CANNON_RIGHT) {
+                } else if (objType == CANNON_LEFT || objType == CANNON_RIGHT)
                     doAnimation = false;
-                }
             }
         }
     }
@@ -43,7 +44,10 @@ public class GameObject {
         aniTick = 0;
         active = true;
 
-        doAnimation = objType != BARREL && objType != BOX && objType != CANNON_LEFT && objType != CANNON_RIGHT;
+        if (objType == BARREL || objType == BOX || objType == CANNON_LEFT || objType == CANNON_RIGHT)
+            doAnimation = false;
+        else
+            doAnimation = true;
     }
 
     protected void initHitbox(int width, int height) {
@@ -71,7 +75,7 @@ public class GameObject {
         this.active = active;
     }
 
-    public void setDoAnimation(boolean doAnimation) {
+    public void setAnimation(boolean doAnimation) {
         this.doAnimation = doAnimation;
     }
 

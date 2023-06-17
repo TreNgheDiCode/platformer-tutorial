@@ -1,11 +1,11 @@
 package ui;
 
-import state.Gamestate;
-import utils.LoadSave;
-
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
+import state.Gamestate;
+import utils.LoadSave;
 import static utils.Constants.UI.Buttons.*;
 
 public class MenuButton {
@@ -76,7 +76,6 @@ public class MenuButton {
         mouseOver = false;
         mousePressed = false;
     }
-
     public Gamestate getState() {
         return state;
     }

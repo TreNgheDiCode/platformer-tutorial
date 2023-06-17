@@ -1,17 +1,18 @@
 package ui;
 
-import main.Game;
-import state.Gamestate;
-import state.Playing;
-import utils.LoadSave;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
-import static utils.Constants.UI.UrmButtons.*;
+import state.Gamestate;
+import state.Playing;
+import main.Game;
+import utils.LoadSave;
+import static utils.Constants.UI.URMButtons.*;
 
 public class LevelCompletedOverlay {
+
     private Playing playing;
     private UrmButton menu, next;
     private BufferedImage img;
@@ -24,8 +25,8 @@ public class LevelCompletedOverlay {
     }
 
     private void initButtons() {
-        int nextX = (int) (445 * Game.SCALE);
         int menuX = (int) (330 * Game.SCALE);
+        int nextX = (int) (445 * Game.SCALE);
         int y = (int) (195 * Game.SCALE);
         next = new UrmButton(nextX, y, URM_SIZE, URM_SIZE, 0);
         menu = new UrmButton(menuX, y, URM_SIZE, URM_SIZE, 2);
@@ -40,6 +41,9 @@ public class LevelCompletedOverlay {
     }
 
     public void draw(Graphics g) {
+        g.setColor(new Color(0, 0, 0, 200));
+        g.fillRect(0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT);
+
         g.drawImage(img, bgX, bgY, bgW, bgH, null);
         next.draw(g);
         menu.draw(g);
@@ -70,12 +74,10 @@ public class LevelCompletedOverlay {
                 playing.resetAll();
                 playing.setGameState(Gamestate.MENU);
             }
-        }
-        else if (isIn(next, e))
+        } else if (isIn(next, e))
             if (next.isMousePressed()) {
                 playing.loadNextLevel();
-                playing.getGame().getAudioPlayer().stopEffect();
-                playing.getGame().getAudioPlayer().setLevelSong(playing.getLevelManager().getLvlIndex());
+                playing.getGame().getAudioPlayer().setLevelSong(playing.getLevelManager().getLevelIndex());
             }
 
         menu.resetBools();

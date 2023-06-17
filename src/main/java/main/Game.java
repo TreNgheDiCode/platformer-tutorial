@@ -1,17 +1,17 @@
 package main;
 
+import java.awt.Graphics;
+
 import audio.AudioPlayer;
+import state.Credits;
 import state.GameOptions;
 import state.Gamestate;
 import state.Menu;
 import state.Playing;
 import ui.AudioOptions;
-import utils.LoadSave;
-
-import java.awt.*;
 
 public class Game implements Runnable {
-    private GameWindow gameWindow;
+
     private GamePanel gamePanel;
     private Thread gameThread;
     private final int FPS_SET = 120;
@@ -19,8 +19,9 @@ public class Game implements Runnable {
 
     private Playing playing;
     private Menu menu;
-    private AudioOptions audioOptions;
+    private Credits credits;
     private GameOptions gameOptions;
+    private AudioOptions audioOptions;
     private AudioPlayer audioPlayer;
 
     public final static int TILES_DEFAULT_SIZE = 32;
@@ -31,25 +32,24 @@ public class Game implements Runnable {
     public final static int GAME_WIDTH = TILES_SIZE * TILES_IN_WIDTH;
     public final static int GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
 
+    private final boolean SHOW_FPS_UPS = false;
+
     public Game() {
-        LoadSave.GetAllLevels();
-
+        System.out.println("size: " + GAME_WIDTH + " : " + GAME_HEIGHT);
         initClasses();
-
         gamePanel = new GamePanel(this);
-        gameWindow = new GameWindow(gamePanel);
-        gamePanel.setFocusable(true);
-        gamePanel.requestFocus();
-
+        new GameWindow(gamePanel);
+        gamePanel.requestFocusInWindow();
         startGameLoop();
     }
 
     private void initClasses() {
         audioOptions = new AudioOptions(this);
+        audioPlayer = new AudioPlayer();
         menu = new Menu(this);
         playing = new Playing(this);
+        credits = new Credits(this);
         gameOptions = new GameOptions(this);
-        audioPlayer = new AudioPlayer();
     }
 
     private void startGameLoop() {
@@ -62,26 +62,26 @@ public class Game implements Runnable {
             case MENU -> menu.update();
             case PLAYING -> playing.update();
             case OPTIONS -> gameOptions.update();
-            default -> System.exit(0);
+            case CREDITS -> credits.update();
+            case QUIT -> System.exit(0);
         }
     }
 
+    @SuppressWarnings("incomplete-switch")
     public void render(Graphics g) {
         switch (Gamestate.state) {
             case MENU -> menu.draw(g);
             case PLAYING -> playing.draw(g);
             case OPTIONS -> gameOptions.draw(g);
-            default -> {
-            }
+            case CREDITS -> credits.draw(g);
         }
-
     }
 
     @Override
     public void run() {
-
         double timePerFrame = 1000000000.0 / FPS_SET;
         double timePerUpdate = 1000000000.0 / UPS_SET;
+
         long previousTime = System.nanoTime();
 
         int frames = 0;
@@ -110,19 +110,19 @@ public class Game implements Runnable {
                 deltaF--;
             }
 
-            if (System.currentTimeMillis() - lastCheck >= 1000) {
-                lastCheck = System.currentTimeMillis();
-                System.out.println("FPS: " + frames + "| UPS: " + updates);
-                frames = 0;
-                updates = 0;
-            }
+            if (SHOW_FPS_UPS)
+                if (System.currentTimeMillis() - lastCheck >= 1000) {
+                    lastCheck = System.currentTimeMillis();
+                    System.out.println("FPS: " + frames + " | UPS: " + updates);
+                    frames = 0;
+                    updates = 0;
+                }
         }
     }
 
     public void windowFocusLost() {
-        if (Gamestate.state == Gamestate.PLAYING) {
+        if (Gamestate.state == Gamestate.PLAYING)
             playing.getPlayer().resetDirBooleans();
-        }
     }
 
     public Menu getMenu() {
@@ -133,12 +133,16 @@ public class Game implements Runnable {
         return playing;
     }
 
-    public AudioOptions getAudioOptions() {
-        return audioOptions;
+    public Credits getCredits() {
+        return credits;
     }
 
     public GameOptions getGameOptions() {
         return gameOptions;
+    }
+
+    public AudioOptions getAudioOptions() {
+        return audioOptions;
     }
 
     public AudioPlayer getAudioPlayer() {

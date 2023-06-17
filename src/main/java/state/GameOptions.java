@@ -11,7 +11,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
-import static utils.Constants.UI.UrmButtons.*;
+import static utils.Constants.UI.URMButtons.*;
 
 public class GameOptions extends State implements Statemethods {
     private AudioOptions audioOptions;
